@@ -17,9 +17,9 @@ def get_branches():
         [GIT_PATH, "branch", "-l", "--format=%(refname:short)"], cwd=REPO_ROOT
     )
     branches = raw_output.decode("utf-8").splitlines()
-    filterd_branches = set(filter(lambda s: s != "main", branches))
+    filtered_branches = set(filter(lambda s: s != "main", branches))
 
-    return filterd_branches
+    return filtered_branches
 
 
 def get_slices(branch):
