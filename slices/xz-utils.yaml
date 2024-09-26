@@ -1,0 +1,33 @@
+package: xz-utils
+
+essential:
+  - xz-utils_copyright
+
+slices:
+  bins:
+    essential:
+      - libc6_libs
+      - liblzma5_libs
+    contents:
+      /usr/bin/lzmainfo:
+      /usr/bin/unxz:
+      /usr/bin/xz:
+      /usr/bin/xzcat:
+  scripts:  # scripts which add xz compression to common utils
+    essential:
+      - base-files_tmp  # utils require temporary storage
+      # shebang in scripts reference interpreter in /bin not /usr/bin
+      - coreutils_bins
+      - diffutils_bins  # needed for xz cmp and diff
+      - grep_bins  # needed for xz grep utils
+      - xz-utils_bins
+    contents:
+      /usr/bin/xzcmp:
+      /usr/bin/xzdiff:
+      /usr/bin/xzegrep:
+      /usr/bin/xzfgrep:
+      /usr/bin/xzgrep:
+
+  copyright:
+    contents:
+      /usr/share/doc/xz-utils/copyright:
