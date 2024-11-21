@@ -10,10 +10,10 @@ from time import sleep
 
 
 ### CONFIG
-# test_dir = Path("tests/spread/integration/metapixel")
+test_dir = Path("tests/spread/integration/metapixel")
 # test_dir = Path("tests/spread/integration/hello")
 # test_dir = Path("tests/spread/integration/xz-utils")
-test_dir = Path("tests/spread/integration/git")
+# test_dir = Path("tests/spread/integration/git")
 # test_dir = Path('tests/spread/integration/flask')
 # test_dir = Path("tests/spread/integration/libgif7")
 # test_dir = Path('tests/spread/integration/libpng16-16t64')
@@ -128,76 +128,31 @@ with TemporaryDirectory() as tempdir_str:
 
     sub.check_output(["cp", "-r", f"{test_dir}/.", tempdir_str])
 
-    inotify_proc = sub.Popen(
-        ["inotifywait", "-rm", tempdir_path], stdout=sub.PIPE, text=True
-    )
-
     matrix = {}
     defaults = {}
-    for key, value in test_task["environment"].items():
-        print(key, value)
 
-        split_key = key.split("/")
+    if "environment" in test_task:
+        for key, value in test_task["environment"].items():
+            split_key = key.split("/")
 
-        if len(split_key) == 2:
-            var, name = split_key
+            if len(split_key) == 2:
+                var, name = split_key
 
-            if name not in matrix:
-                matrix[name] = {}
+                if name not in matrix:
+                    matrix[name] = {}
 
-            matrix[name][var] = value
+                matrix[name][var] = value
 
-        else:
-            defaults[key] = value
-
-    # print(matrix)
+            else:
+                defaults[key] = value
+    else:
+        matrix = {"Default": {}}
 
     for matrix_name, matrix_vars in matrix.items():
-        print("Running", matrix_name)
+        task_env = {**environ, **defaults, **matrix_vars}
+        print(f"Running {matrix_name} environment.")
         sub.run(
             ["unshare", "-r", shell, "-c", "set -x\n" + test_task["execute"]],
-            env={**environ, **defaults, **matrix_vars},
+            env=task_env,
             cwd=tempdir_str,
         )
-
-    inotify_proc.terminate()
-
-    # comment me, used for testing with out analysis
-    # sub.Popen(["ls", "-lashR"], cwd=rootfs_path)
-
-    sleep(1)
-    exit()
-
-    inotify_log = inotify_proc.stdout.read()
-    setup_events, task_events = parse_inotify(inotify_log, rootfs_path)
-
-    setup_tree = load_tree(setup_events)
-    task_tree = load_tree(task_events)
-
-    du_proc = sub.Popen(["du", "-b", "-a"], cwd=rootfs_path, stdout=sub.PIPE, text=True)
-    du_log = du_proc.stdout.read()
-    du_result = parse_du(du_log)
-
-    # for path, event in setup_events:
-    #     print("setup", event, path)
-
-    # for path, event in task_events:
-    #     print("task", event, path)
-
-    ## ANALYSIS
-    min_rootfs = task_tree.intersection(setup_tree)
-    file_efficiency = 100 * len(min_rootfs) / len(setup_tree)
-
-    setup_rootfs_size = sum([du_result[file] for file in setup_tree])
-    min_rootfs_size = sum([du_result[file] for file in min_rootfs])
-    space_efficiency = 100 * min_rootfs_size / setup_rootfs_size
-
-    print(f"\nSetup RootFS: {setup_rootfs_size} bytes")
-    for path in setup_tree:
-        print("\t", path)
-
-    print(f"\nMin RootFS: {min_rootfs_size} bytes")
-    for path in min_rootfs:
-        print("\t", path)
-    print("file efficiency", file_efficiency)
-    print("space efficiency", space_efficiency)
