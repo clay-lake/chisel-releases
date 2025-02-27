@@ -30,7 +30,8 @@ slices:
     essential:
       - libc6_libs
     contents:
-      /etc/rmt: {symlink: /usr/sbin/rmt-tar}
+      /etc/rmt:
+      /usr/sbin/rmt: {symlink: /usr/sbin/rmt-tar}
       /usr/sbin/rmt-tar:
 
   tar:
