@@ -58,7 +58,6 @@ slices:
     essential:
       - base-passwd_data
     contents:
-      /etc/default/useradd:
       /usr/lib/tmpfiles.d/passwd.conf:
 
   # This slices contains configuration files used by libpam, and these
