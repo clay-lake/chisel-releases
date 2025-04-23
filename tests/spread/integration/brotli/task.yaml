@@ -1,0 +1,15 @@
+summary: Integration tests for brotli
+
+execute: |
+
+  # testing for only bins slice
+  rootfs_bins="$(install-slices brotli_bins)"
+
+  # generate a test file
+  echo "Hello World!" > "${rootfs_bins}/input.txt"
+
+  # test compression and decompression commands
+  chroot "${rootfs_bins}" /usr/bin/brotli -k input.txt
+  cmp "${rootfs_bins}/input.txt" <(chroot "${rootfs_bins}" brotli -d -c input.txt.br)
+
+

@@ -1,0 +1,17 @@
+package: brotli
+
+essential:
+  - brotli_copyright
+
+slices:
+  bins:
+    essential:
+      - libbrotli1_libs
+      - libc6_libs
+    contents:
+      /usr/bin/brotli:
+
+  copyright:
+    contents:
+      /usr/share/doc/brotli/copyright:
+
