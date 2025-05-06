@@ -12,3 +12,4 @@ prepare: |
 execute: |
   # Run smoke tests.
   ./smoke.sh
+ 
