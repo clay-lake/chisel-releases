@@ -4,7 +4,15 @@ essential:
   - libssl3_copyright
 
 slices:
+
   libs:
+    essential:
+      - libssl3_libs-fips
+    contents:
+      /usr/lib/*-linux-*/ossl-modules/legacy.so:
+
+  # This is a compatibility slice for FIPS archives.
+  libs-fips:
     essential:
       - libc6_libs
     contents:
@@ -13,7 +21,6 @@ slices:
       /usr/lib/*-linux-*/engines-3/padlock.so:
       /usr/lib/*-linux-*/libcrypto.so.*:
       /usr/lib/*-linux-*/libssl.so.*:
-      /usr/lib/*-linux-*/ossl-modules/legacy.so:
 
   copyright:
     contents:

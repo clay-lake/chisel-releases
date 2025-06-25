@@ -4,11 +4,18 @@ essential:
   - openssl_copyright
 
 slices:
+
   bins:
+    essential:
+      - openssl_bins-fips
+      - libssl3_libs
+
+  # This is a compatibility slice for FIPS archives.
+  bins-fips:
     essential:
       - libc6_config
       - libc6_libs
-      - libssl3_libs
+      - libssl3_libs-fips
       - openssl_config
     contents:
       /usr/bin/c_rehash:
